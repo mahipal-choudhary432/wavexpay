@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaveXpay Digital Wallet (Professional Design)</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <script>
+        // Tailwind Custom Configuration
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'app-blue': '#0A0A7D', // Deep Indigo/WaveX Primary
+                        'app-orange': '#FF8C00', // Vibrant Accent
+                        'wavex-bg': '#f3f4f6', // Light gray background
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* CRITICAL: Ensure HTML and Body fill the entire viewport for full-screen behavior */
+        html, body {
+            height: 100%;
+        }
+        
+        /* Hide scrollbar for a cleaner app look, common in professional web apps */
+        .scrollable-content {
+            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+        }
+        .scrollable-content::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        /* Ensure the body fills the viewport and is centered */
+        body {
+            background-color: #eef1f5; /* Light grey background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh; /* Use min-height for robustness */
+        }
+    </style>
+</head>
+<body class="bg-wavex-bg">
+    
+    <!-- MAIN CONTENT CONTAINER (Max width for desktop, full width on mobile) -->
+    <!-- CRITICAL CHANGE: Using h-screen to ensure the container uses 100% of viewport height on all devices -->
+    <div class="scrollable-content w-full max-w-2xl bg-white shadow-xl overflow-y-scroll overflow-x-hidden h-screen pb-20">
+
+        <!-- Status Bar & Header -->
+        <div class="px-5 pt-3 bg-white">
+            <div class="flex justify-between items-center text-sm font-semibold text-gray-700">
+                <span>7:00PM</span>
+                <span>96%</span>
+                <span>📶</span>
+            </div>
+
+            <div class="flex justify-between items-center py-3">
+                <!-- Location/User - Updated with ID and JS function -->
+                <div class="user-location leading-tight cursor-pointer" onclick="toggleLocationMenu()">
+                    <p class="font-bold text-lg text-app-blue hover:text-indigo-700 transition duration-150">👤 Location</p>
+                    <!-- Location text is now set via JavaScript for dynamic control -->
+                    <p id="current-location" class="text-xs text-gray-500">Loading... <span class="text-app-orange ml-1">▼</span></p>
+                </div>
+                <!-- Icons -->
+                <div class="flex space-x-4 text-xl">
+                    <span class="text-gray-700 hover:text-app-orange cursor-pointer transition" onclick="showToast('Search offers...')">🔍</span>
+                    <span class="text-gray-700 hover:text-app-orange cursor-pointer transition" onclick="showToast('Wallet balance view opens.')">💰</span>
+                    <span class="text-gray-700 hover:text-app-orange cursor-pointer transition" onclick="showToast('Checking notifications...')">🔔</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Scan To Pay -->
+        <div class="bg-app-blue p-5 flex justify-center pb-10">
+            <div class="scan-area text-center p-8 border-2 border-app-orange rounded-2xl cursor-pointer hover:shadow-2xl transition duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
+                 onclick="handleScanClick()"
+                 style="background: radial-gradient(circle at 50% 50%, #1e3a8a, var(--tw-bg-opacity, 1) var(--app-blue)); --tw-bg-opacity: 0;">
+                <h1 class="text-white text-3xl font-black leading-none">Tap to Scan</h1>
+                <p class="text-app-orange text-4xl mt-1">👆</p>
+            </div>
+        </div>
+
+        <!-- Card Alert (Floating Card Effect) -->
+        <div class="mx-5 -mt-8 mb-6 p-4 flex items-center bg-white rounded-xl shadow-lg border border-gray-100">
+            <div class="flex-grow leading-snug">
+                <p class="font-semibold text-sm text-gray-800">💳 Credit Card-9685</p>
+                <p class="text-xs font-bold text-red-500 mt-1">₹1200 due on Wed, 25 Jan</p>
+            </div>
+            <!-- UPDATED to call handlePayNowClick() -->
+            <button class="bg-app-orange text-white font-semibold py-2 px-4 rounded-lg text-sm ml-3 shadow-md hover:bg-orange-700 transition"
+                    onclick="handlePayNowClick()">
+                Pay Now
+            </button>
+            <button class="bg-gray-100 text-app-blue font-semibold py-2 px-4 rounded-lg text-sm ml-2 border border-gray-300 hover:bg-gray-200 transition"
+                    onclick="handleMyBillsClick()">
+                My Bills
+            </button>
+        </div>
+        
+        <!-- Money Transfers Section -->
+        <div class="app-section px-5 mb-8">
+            <h3 class="text-lg font-extrabold text-app-blue border-l-4 border-app-orange pl-3 mb-4">Money Transfers</h3>
+            <div class="grid grid-cols-4 md:grid-cols-5 gap-y-6 gap-x-2">
+                <div class="icon-item" onclick="handleIconClick('Pay to Contact')"><span>👥</span><p>Pay to Contact</p></div>
+                <div class="icon-item" onclick="handleIconClick('To Bank/UPI ID')"><span>🏦</span><p>To Bank/UPI ID</p></div>
+                <div class="icon-item" onclick="handleIconClick('Self Account')"><span>🔄</span><p>Self Account</p></div>
+                <div class="icon-item" onclick="handleIconClick('Check Balance')"><span>🏛️</span><p>Check Balance</p></div>
+            </div>
+        </div>
+
+        <!-- Popular Section -->
+        <div class="app-section px-5 mb-8">
+            <h3 class="text-lg font-extrabold text-app-blue border-l-4 border-app-orange pl-3 mb-4">Popular</h3>
+            <div class="grid grid-cols-4 md:grid-cols-5 gap-y-6 gap-x-2 popular-grid">
+                <div class="icon-item" onclick="handleIconClick('Mobile Recharge')"><span>📱</span><p>Mobile Recharge</p></div>
+                <div class="icon-item" onclick="handleIconClick('FASTag Recharge')"><span>🚗</span><p>FASTag Recharge</p></div>
+                <div class="icon-item" onclick="handleIconClick('DTH')"><span>📡</span><p>DTH</p></div>
+                <div class="icon-item" onclick="handleIconClick('Loan Repayment')"><span>💰</span><p>Loan Repayment</p></div>
+                <div class="icon-item" onclick="handleIconClick('Credit Card Bill')"><span>💳</span><p>Credit Card Bill</p></div>
+            </div>
+        </div>
+
+        <!-- Donations & Devotion Section (NEW) -->
+        <div class="app-section px-5 mb-8">
+            <h3 class="text-lg font-extrabold text-app-blue border-l-4 border-app-orange pl-3 mb-4">Donations & Devotion</h3>
+            <div class="grid grid-cols-4 md:grid-cols-5 gap-y-6 gap-x-2 donation-grid">
+                <!-- Using items from the design PDF (Page 5) -->
+                <div class="icon-item" onclick="handleIconClick('General Donate')"><span>❤️</span><p>Donate</p></div>
+                <div class="icon-item" onclick="handleIconClick('Devotional Services')"><span>🕉️</span><p>Devotion</p></div>
+                <div class="icon-item" onclick="handleIconClick('Ram Mandir Donation')"><span>🚩</span><p>Ram Mandir</p></div>
+                <div class="icon-item" onclick="handleIconClick('Donate Meal')"><span>🍽️</span><p>Donate meal</p></div>
+            </div>
+        </div>
+        
+        <!-- Utilities Section -->
+        <div class="app-section px-5 mb-8">
+            <h3 class="text-lg font-extrabold text-app-blue border-l-4 border-app-orange pl-3 mb-4">Utilities</h3>
+            <div class="grid grid-cols-4 md:grid-cols-5 gap-y-6 gap-x-2 utilities-grid">
+                <div class="icon-item" onclick="handleIconClick('Rent Payment')"><span>🏠</span><p>Rent</p></div>
+                <div class="icon-item" onclick="handleIconClick('Water Bill')"><span>💧</span><p>Water</p></div>
+                <div class="icon-item" onclick="handleIconClick('Electricity Bill')"><span>💡</span><p>Electricity</p></div>
+                <div class="icon-item" onclick="handleIconClick('Cylinder Booking')"><span>⛽</span><p>Cylinder</p></div>
+                <div class="icon-item" onclick="handleIconClick('Postpaid Bill')"><span>📞</span><p>Postpaid</p></div>
+                <div class="icon-item" onclick="handleIconClick('Broadband')"><span>🌐</span><p>Broadband</p></div>
+                <div class="icon-item" onclick="handleIconClick('Piped Gas')"><span>🔥</span><p>Piped Gas</p></div>
+                <div class="icon-item" onclick="handleIconClick('Buy FASTag')"><span>🎟️</span><p>Buy FASTag</p></div>
+                <div class="icon-item" onclick="handleIconClick('NCMC Recharge')"><span>🚌</span><p>NCMC Recharge</p></div>
+                <div class="icon-item" onclick="handleIconClick('Prepaid Meter')"><span>⚙️</span><p>Prepaid Meter</p></div>
+            </div>
+        </div>
+        
+        <!-- Financial Services & Taxes -->
+        <div class="app-section px-5 mb-10">
+            <h3 class="text-lg font-extrabold text-app-blue border-l-4 border-app-orange pl-3 mb-4">Financial Services & Taxes</h3>
+            <div class="grid grid-cols-4 md:grid-cols-5 gap-y-6 gap-x-2">
+                <div class="icon-item" onclick="handleIconClick('LIC/Insurance')"><span>🛡️</span><p>LIC/Insurance</p></div>
+                <div class="icon-item" onclick="handleIconClick('Municipal Tax')"><span>🏘️</span><p>Municipal Tax & Services</p></div>
+                <div class="icon-item" onclick="handleIconClick('Recurring Deposit')"><span>📈</span><p>Recurring Deposit</p></div>
+                <div class="icon-item" onclick="handleIconClick('NPS Investment')"><span>🐖</span><p>NPS</p></div>
+                <div class="icon-item" onclick="handleIconClick('Education Fees')"><span>🎓</span><p>Education Fees</p></div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Section (NEW DYNAMIC SECTION) -->
+        <div class="app-section px-5 mb-10">
+            <h3 class="text-lg font-extrabold text-app-blue border-l-4 border-app-orange pl-3 mb-4">Recent Activity</h3>
+            <div id="recent-activity-list" class="space-y-3">
+                <!-- Activities will be inserted here by JavaScript -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FIXED NAVIGATION BAR (Bottom of the content area, not the viewport) -->
+    <div class="nav-bar fixed bottom-0 w-full max-w-2xl bg-white flex justify-around p-4 shadow-2xl border-t border-gray-200">
+        <div class="nav-item text-center text-sm font-semibold text-app-blue active" onclick="handleNavClick(event, 'Home')">
+            <span class="text-2xl block mb-0.5">🏠</span>Home
+        </div>
+        <div class="nav-item text-center text-sm font-semibold text-gray-500 hover:text-app-blue transition duration-150" onclick="handleNavClick(event, 'Menu')">
+            <span class="text-2xl block mb-0.5">📲</span>Menu
+        </div>
+        <div class="nav-item text-center text-sm font-semibold text-gray-500 hover:text-app-blue transition duration-150" onclick="handleNavClick(event, 'History')">
+            <span class="text-2xl block mb-0.5 transform scale-x-[-1]">⏳</span>History
+        </div>
+    </div>
+
+    <!-- Custom Toast Message Box -->
+    <div id="toast-message" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white py-3 px-5 rounded-xl text-sm opacity-0 invisible transition-opacity duration-300 shadow-xl"></div>
+
+    <script>
+        // Global State for Activities (stored in memory for this example)
+        let recentActivities = [];
+
+        // Function to render the activity list by manipulating the DOM
+        function renderActivities() {
+            const listElement = document.getElementById('recent-activity-list');
+            if (!listElement) return;
+
+            // Clear existing content
+            listElement.innerHTML = '';
+
+            if (recentActivities.length === 0) {
+                listElement.innerHTML = '<p class="text-sm text-gray-500 p-3 bg-gray-50 rounded-lg">No recent transactions yet. Start a transfer or bill payment!</p>';
+                return;
+            }
+
+            // Iterate and create list items (reversing to show newest first, limiting to 5)
+            recentActivities.slice().reverse().slice(0, 5).forEach((activity) => {
+                const activityDiv = document.createElement('div');
+                activityDiv.classList.add('flex', 'items-center', 'justify-between', 'p-3', 'bg-white', 'rounded-xl', 'shadow-sm', 'border', 'border-gray-100');
+
+                const icon = activity.icon || '➡️';
+                const statusClass = activity.status === 'Success' ? 'text-green-600' : (activity.status === 'Pending' ? 'text-app-orange' : 'text-gray-700');
+                const statusText = activity.status || 'Processing';
+
+                activityDiv.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xl">${icon}</span>
+                        <div>
+                            <p class="font-semibold text-gray-800 text-sm">${activity.name}</p>
+                            <p class="text-xs text-gray-500">${activity.time}</p>
+                        </div>
+                    </div>
+                    <span class="font-medium text-xs ${statusClass}">${statusText}</span>
+                `;
+                listElement.appendChild(activityDiv);
+            });
+        }
+
+        // Function to add a new activity and re-render the list
+        function addActivity(actionName, icon = '✅', status = 'Success') {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const newActivity = {
+                name: actionName,
+                time: timeString,
+                icon: icon,
+                status: status
+            };
+
+            recentActivities.push(newActivity);
+            showToast(`Action performed: ${actionName}. Activity logged.`);
+            renderActivities();
+        }
+
+
+        // *** DYNAMIC LOCATION UPDATE VIA JAVASCRIPT ***
+        // Function to update the location text dynamically.
+        function updateLocation(newLocation) {
+            const locationElement = document.getElementById('current-location');
+            if (locationElement) {
+                // Update the text, keeping the arrow icon
+                locationElement.innerHTML = `${newLocation} <span class="text-app-orange ml-1">▼</span>`;
+            }
+        }
+        
+        // Function to handle the location click (a new JS action).
+        function toggleLocationMenu() {
+            showToast("Location menu toggled. Simulating opening address list...");
+        }
+        
+        // Custom toast notification function (replacing forbidden alert()).
+        function showToast(message) {
+            const toast = document.getElementById("toast-message");
+            if (!toast) return;
+
+            // Clear any existing timeout
+            clearTimeout(toast.timeoutId);
+            
+            toast.textContent = message;
+            toast.style.opacity = '1';
+            toast.style.visibility = 'visible';
+            
+            // Hide the toast after 3 seconds
+            toast.timeoutId = setTimeout(function(){ 
+                toast.style.opacity = '0';
+                toast.style.visibility = 'hidden';
+            }, 3000);
+        }
+
+        // Handler for the main 'Quick Scan To Pay' area.
+        function handleScanClick() {
+            // Logs activity to the new list
+            addActivity("QR Scan Initiated", '📸', 'Pending');
+        }
+
+        // Generic handler for service icon clicks.
+        function handleIconClick(serviceName) {
+            // Randomly simulate a successful or pending transaction
+            const status = Math.random() > 0.1 ? 'Success' : 'Pending';
+            const icon = status === 'Success' ? '✅' : '⏳';
+            // Logs activity to the new list
+            addActivity(`${serviceName} Request`, icon, status);
+        }
+
+        // Handler for "Pay Now" button on the Credit Card Alert
+        function handlePayNowClick() {
+            // Logs activity to the new list
+            addActivity("Credit Card Bill Payment", '💳', 'Success');
+        }
+
+        // Handler for "My Bills" button
+        function handleMyBillsClick() {
+            showToast('Redirecting to My Bills list.');
+        }
+
+        // Handler for bottom navigation bar clicks.
+        function handleNavClick(event, pageName) {
+            showToast(`Switching to ${pageName} view.`);
+            
+            // Simple visual active state toggle
+            document.querySelectorAll('.nav-bar .nav-item').forEach(item => {
+                item.classList.remove('active', 'text-app-blue');
+                item.classList.add('text-gray-500');
+            });
+
+            event.currentTarget.classList.add('active', 'text-app-blue');
+            event.currentTarget.classList.remove('text-gray-500');
+        }
+
+        // Apply hover and general styles to the service icons via JS for dynamic class application
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Initialize location dynamically
+            updateLocation('Indira Nagar, Bengaluru');
+            
+            // 2. Render initial activities (even if empty)
+            renderActivities();
+            
+            // 3. Apply dynamic icon styles
+            document.querySelectorAll('.app-section .icon-item').forEach(item => {
+                const iconSpan = item.querySelector('span');
+                
+                // Base professional style for all icons
+                iconSpan.classList.add('bg-gray-100', 'rounded-2xl', 'p-4', 'text-2xl', 'text-indigo-700', 'shadow-sm', 'w-16', 'h-16', 'flex', 'justify-center', 'items-center', 'mx-auto');
+                item.classList.add('flex', 'flex-col', 'items-center', 'cursor-pointer', 'transition', 'duration-150', 'hover:opacity-80', 'active:scale-95');
+
+                // Custom color for 'Popular' icons (for visual distinction)
+                if (item.closest('.popular-grid')) {
+                    iconSpan.classList.remove('bg-gray-100', 'text-indigo-700');
+                    iconSpan.classList.add('bg-app-orange/10', 'text-app-orange', 'font-semibold');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
